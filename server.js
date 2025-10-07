@@ -104,8 +104,8 @@ app.post("/iteraplay", async (req, res) => {
 
 // 
 app.post("/server2",async(req,res)=>{
-  const { link } = req.body;
-const url = `https://tboxdownloader.in/tbox/itp/v2/proxy.php?url=${link}`;
+  const { url } = req.body;
+const link = `https://tboxdownloader.in/tbox/itp/v2/proxy.php?url=${url}`;
 const headers = {
   'accept': '*/*',
   'accept-encoding': 'gzip, deflate, br, zstd',
@@ -117,7 +117,7 @@ const headers = {
   'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36'
 };
 try {
-    const response = await fetch(url, { headers });
+    const response = await fetch(link, { headers });
     const data = await response.text(); // use .json() if the response is JSON
     return res.json(data);
   } catch (err) {
