@@ -101,6 +101,35 @@ app.post("/iteraplay", async (req, res) => {
     return res.status(500).json({ error: "Something went wrong" });
   }
 });
+
+// 
+app.post("/server2",async(req,res)=>{
+  const { link } = req.body;
+const url = `https://tboxdownloader.in/tbox/itp/v2/proxy.php?url=${link}`;
+const headers = {
+  'accept': '*/*',
+  'accept-encoding': 'gzip, deflate, br, zstd',
+  'accept-language': 'en-IN,en-GB;q=0.9,en-US;q=0.8,en;q=0.7,hi;q=0.6',
+  'cache-control': 'no-cache',
+  'dnt': '1',
+  'pragma': 'no-cache',
+  'referer': 'https://tboxdownloader.in/',
+  'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36'
+};
+try {
+    const response = await fetch(url, { headers });
+    const data = await response.text(); // use .json() if the response is JSON
+    return res.json(data);
+  } catch (err) {
+    console.error('Error fetching data:', err);
+    return res.status(500).json({ error: 'Something went wrong' });
+  }
+
+})
+
+
+
+
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
