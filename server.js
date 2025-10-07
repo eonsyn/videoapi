@@ -118,7 +118,7 @@ const headers = {
 };
 try {
     const response = await fetch(link, { headers });
-    const data = await response.text(); // use .json() if the response is JSON
+    const data = await response.json(); // use .json() if the response is JSON
     return res.json(data);
   } catch (err) {
     console.error('Error fetching data:', err);
