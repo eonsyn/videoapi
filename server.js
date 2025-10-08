@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config(); // Load env variables
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY; // get key from env
 
 app.use(cors());
@@ -105,7 +105,7 @@ app.post("/iteraplay", async (req, res) => {
 // 
 app.post("/server2",async(req,res)=>{
   const { url } = req.body;
-const link = `https://tboxdownloader.in/tbox/itp/v2/proxy.php?url=${url}`;
+const link = `https://tboxdownloader.in/tbox/basic/v1/proxy.php?url=${url}`;
 const headers = {
   'accept': '*/*',
   'accept-encoding': 'gzip, deflate, br, zstd',
@@ -118,7 +118,7 @@ const headers = {
 };
 try {
     const response = await fetch(link, { headers });
-    const data = await response.json(); // use .json() if the response is JSON
+    const data = await response.json() ; // use .json() if the response is JSON
     return res.json(data);
   } catch (err) {
     console.error('Error fetching data:', err);
