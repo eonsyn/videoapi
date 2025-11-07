@@ -1,150 +1,79 @@
-import express from 'express';
-import fetch from 'node-fetch';
-import cors from 'cors';
-import dotenv from 'dotenv';
+import express from "express"; 
+import cors from "cors";
+import axios from "axios";
+import qs from "qs";
+import dotenv from "dotenv";
 
-dotenv.config(); // Load env variables
-
+import jwt from "jsonwebtoken";
+dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 5000;
-const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY; // get key from env
-
 app.use(cors());
 app.use(express.json());
 
-app.post('/fetch-url', async (req, res) => {
-  const { url } = req.body;
+// 🔑 Secret key from environment
+const SECRET = process.env.SECRET_KEY;
 
-  if (!url) {
-    return res.status(400).json({ error: 'URL is required in body' });
-  }
-
-  try {
-    const apiUrl = `https://terabox-downloader-direct-download-link-generator2.p.rapidapi.com/url?url=${encodeURIComponent(url)}`;
-
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'Accept': '*/*',
-        'Accept-Encoding': 'gzip, deflate, br, zstd',
-        'Accept-Language': 'en-IN,en-GB;q=0.9,en-US;q=0.8,en;q=0.7,hi;q=0.6',
-        'Cache-Control': 'no-cache',
-        'DNT': '1',
-        'Origin': 'https://teradownloader.vercel.app',
-        'Pragma': 'no-cache',
-        'Referer': 'https://teradownloader.vercel.app/',
-        'Sec-CH-UA': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
-        'Sec-CH-UA-Mobile': '?1',
-        'Sec-CH-UA-Platform': '"Android"',
-        'Sec-Fetch-Dest': 'empty',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Site': 'cross-site',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36',
-        'X-RapidAPI-Host': 'terabox-downloader-direct-download-link-generator2.p.rapidapi.com',
-        'X-RapidAPI-Key': RAPIDAPI_KEY
-      }
-    });
-
-    const contentType = response.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
-      const data = await response.json();
-      return res.json(data);
-    } else {
-      const text = await response.text();
-      return res.send(text);
-    }
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Something went wrong' });
-  }
-});
-
-app.post("/iteraplay", async (req, res) => {
-  const { link } = req.body;
-
-  if (!link) {
-    return res.status(400).json({ error: "link is required in body" });
-  }
+// ---------------------- HMAC Token Verification ----------------------
+ function verifyJWT(req, res, next) {
+  const token = req.headers["x-secure-token"];
+  if (!token) return res.status(403).json({ error: "Missing token" });
 
   try {
-    const apiUrl = "https://api.iteraplay.com/iteraplay.php";
-
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Accept-Encoding": "gzip, deflate, br, zstd",
-        "Accept-Language": "en-IN,en-GB;q=0.9,en-US;q=0.8,en;q=0.7,hi;q=0.6",
-        "Cache-Control": "no-cache",
-        "Content-Type": "application/json",
-        "DNT": "1",
-        "Origin": "https://iteraplay.com",
-        "Pragma": "no-cache",
-        "Referer": "https://iteraplay.com/",
-        "Sec-CH-UA": '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
-        "Sec-CH-UA-Mobile": "?1",
-        "Sec-CH-UA-Platform": '"Android"',
-        "Sec-Fetch-Dest": "empty",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "same-site",
-        "User-Agent":
-          "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
-        "x-api-key": terabox_pro_api_august_2025_premium,
-      },
-      body: JSON.stringify({ link }),
-    });
-
-    const data = await response.json();
-    return res.json(data);
+    const payload = jwt.verify(token, SECRET); // auto checks expiry
+    req.tokenPayload = payload; // optional
+    next();
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Something went wrong" });
+    console.error("JWT verification error:", err.message);
+    res.status(403).json({ error: "kya be chirkut" });
   }
-});
-
-// 
-app.post("/server2",async(req,res)=>{
-  const { url } = req.body;
-const payload = {
-    link:url
 }
 
-const headers = {
-  'accept': '*/*',
-  'accept-encoding': 'gzip, deflate, br, zstd',
-  'accept-language': 'en-IN,en-GB;q=0.9,en-US;q=0.8,en;q=0.7,hi;q=0.6',
-  'cache-control': 'no-cache',
-  'dnt': '1',
-  'pragma': 'no-cache',
-  'referer': 'https://tboxdownloader.in/',
-  'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36'
-};
-const requestOptions = {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(payload)
-};
-try {
-    const response = await fetch('https://tboxdownloader.in/tbox/basic/v2/tboxdownloader-in.php', requestOptions);
-    const data = await response.json() ; // use .json() if the response is JSON
-    return res.json(data);
+
+// ---------------------- Fetch OneView Result ----------------------
+async function fetchOneViewResult(rollNo) {
+  const url = "https://oneview.aktu.ac.in/WebPages/AKTU/OneView.aspx";
+
+  const data = {
+    __EVENTTARGET: "",
+    __EVENTARGUMENT: "",
+    __VIEWSTATE:
+      "/wEPDwULLTExMDg0MzM4NTIPZBYCAgMPZBYEAgMPZBYEAgkPDxYCHgdWaXNpYmxlaGRkAgsPDxYCHwBnZBYCAgEPZBYEAgMPDxYCHgdFbmFibGVkaGRkAgUPFgIfAWhkAgkPZBYCAgEPZBYCZg9kFgICAQ88KwARAgEQFgAWABYADBQrAABkGAEFEmdyZFZpZXdDb25mbGljdGlvbg9nZEj7pHjMdpqzXPMViMldFkeGjx3IpdUVid7sjedCGPPI",
+    __VIEWSTATEGENERATOR: "FF2D60E4",
+    __EVENTVALIDATION:
+      "/wEdAAWjieCZ6D3jJPRsYhIb4WL1WB/t8XsfPbhKtaDxBSD9L47U3Vc0WZ+wxclqyPFfzmNKpf/A83qpx8oXSYxifk/OuqJzdLRkOMLOoT0zZmF15DWzOb+YJ8ghyo6LVCa9G/Z8aT4v6Aejt4yzYIiEWTI1",
+    txtRollNo: rollNo,
+    "g-recaptcha-response": "",
+    btnSearch: "खोजें",
+    hidForModel: "",
+  };
+
+  const headers = {
+    Accept:
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "Content-Type": "application/x-www-form-urlencoded",
+    Origin: "https://oneview.aktu.ac.in",
+    Referer: "https://oneview.aktu.ac.in/WebPages/AKTU/OneView.aspx",
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+  };
+
+  const response = await axios.post(url, qs.stringify(data), { headers });
+  return response.data;
+}
+
+// ---------------------- Routes ----------------------
+app.post("/api/secure", verifyJWT, async (req, res) => {
+  try {
+    const { rollNo } = req.body;
+    if (!rollNo) return res.status(400).json({ error: "Missing roll number" });
+
+    const html = await fetchOneViewResult(rollNo);
+    res.json({ success: true, html });
   } catch (err) {
-    console.error('Error fetching data:', err);
-    return res.status(500).json({ error: 'Something went wrong' });
+    console.error("Fetch error:", err.message);
+    res.status(500).json({ error: "Failed to fetch result" });
   }
-
-})
-
-
-
-
-app.get('/', (req, res) => {
-  res.send('Hello World!');
 });
 
-
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+// ---------------------- Start Server ----------------------
+app.listen(5000, () => console.log("🚀 Secure API running on port 5000"));
