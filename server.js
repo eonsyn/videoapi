@@ -15,12 +15,14 @@ const SECRET = process.env.SECRET_KEY;
 
 // ---------------------- HMAC Token Verification ----------------------
  function verifyJWT(req, res, next) {
+  console.log("verifying the towken")
   const token = req.headers["x-secure-token"];
   if (!token) return res.status(403).json({ error: "Missing token" });
 
   try {
     const payload = jwt.verify(token, SECRET); // auto checks expiry
     req.tokenPayload = payload; // optional
+    console.log("verificationii completed ")
     next();
   } catch (err) {
     console.error("JWT verification error:", err.message);
@@ -66,8 +68,9 @@ app.post("/api/secure", verifyJWT, async (req, res) => {
   try {
     const { rollNo } = req.body;
     if (!rollNo) return res.status(400).json({ error: "Missing roll number" });
-
+console.log("aktu data fetching")
     const html = await fetchOneViewResult(rollNo);
+    console.log("aktu data fetching completed ")
     res.json({ success: true, html });
   } catch (err) {
     console.error("Fetch error:", err.message);
