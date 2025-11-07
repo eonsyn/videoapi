@@ -79,4 +79,5 @@ console.log("aktu data fetching")
 });
 
 // ---------------------- Start Server ----------------------
-app.listen(5000, () => console.log("🚀 Secure API running on port 5000"));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Secure API running on port ${PORT}`));
